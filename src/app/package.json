@@ -6,7 +6,7 @@
 	"main": "index.html",
 
 	"window": {
-		"title": "<%= main['display-name'] %>",
+		"title": "\u200b",
 		"frame": false,
 		"resizable": true,
 		"show": false,
