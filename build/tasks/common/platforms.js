@@ -2,25 +2,41 @@ module.exports = {
 	platforms: {
 		win32: {
 			platform: "win32",
-			arch    : "ia32"
+			arch    : "ia32",
+			nwPlatform: "win",
+			nwArch    : "ia32"
 		},
 		win64: {
 			platform: "win32",
-			arch    : "x64"
+			arch    : "x64",
+			nwPlatform: "win",
+			nwArch    : "x64"
 		},
 
+		osxArm64: {
+			platform: "darwin",
+			arch    : "arm64",
+			nwPlatform: "osx",
+			nwArch    : "arm64"
+		},
 		osx64: {
 			platform: "darwin",
-			arch    : "x64"
+			arch    : "x64",
+			nwPlatform: "osx",
+			nwArch    : "x64"
 		},
 
 		linux32: {
 			platform: "linux",
-			arch    : "ia32"
+			arch    : "ia32",
+			nwPlatform: "linux",
+			nwArch    : "ia32"
 		},
 		linux64: {
 			platform: "linux",
-			arch    : "x64"
+			arch    : "x64",
+			nwPlatform: "linux",
+			nwArch    : "x64"
 		}
 	},
 
@@ -33,6 +49,12 @@ module.exports = {
 	getPlatform() {
 		for ( let [ name, { platform, arch } ] of Object.entries( this.platforms ) ) {
 			if ( platform === process.platform && arch === process.arch ) {
+				return name;
+			}
+		}
+
+		for ( let [ name, { platform, arch } ] of Object.entries( this.platforms ) ) {
+			if ( platform === process.platform && arch === "x64" && process.arch === "arm64" ) {
 				return name;
 			}
 		}

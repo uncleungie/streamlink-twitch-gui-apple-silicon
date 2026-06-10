@@ -1,23 +1,33 @@
 module.exports = function( grunt ) {
-	const NwBuilder = require( "nw-builder" );
 	const platforms = require( "../common/platforms" );
 	const { resolve: r } = require( "path" );
 
-	function taskRun() {
+	async function taskRun() {
 		const done = this.async();
-		const options = this.options({
-			platforms: [ platforms.getPlatform() ]
-		});
+		const plat = platforms.getPlatform();
+		const { nwPlatform, nwArch } = platforms.platforms[ plat ];
 
-		options.files = r( process.cwd(), this.data.src );
+		const options = Object.assign(
+			{ platform: nwPlatform, arch: nwArch },
+			this.options(),
+			{ srcDir: r( process.cwd(), this.data.src ) }
+		);
 
-		const nw = new NwBuilder( options );
+		try {
+			const { default: nwbuild } = await import( "nw-builder" );
+			const nwProcess = await nwbuild( options );
 
-		nw.on( "log", grunt.log.writeln.bind( grunt.log ) );
-		nw.on( "stdout", grunt.log.writeln.bind( grunt.log ) );
-		nw.on( "stderr", grunt.log.writeln.bind( grunt.log ) );
+			if ( nwProcess.exitCode !== null ) {
+				done( nwProcess.exitCode === 0 );
+				return;
+			}
 
-		nw.run().then( done, grunt.fail.fatal );
+			nwProcess.on( "close", code => {
+				done( code === 0 );
+			});
+		} catch ( err ) {
+			grunt.fail.fatal( err );
+		}
 	}
 
 	grunt.task.registerMultiTask(

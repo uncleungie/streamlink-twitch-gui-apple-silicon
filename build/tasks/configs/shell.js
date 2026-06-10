@@ -5,6 +5,25 @@ module.exports = {
 			"find . -type f -print0 | xargs -0 chmod -R g=u,o=u,g-w,o-w"
 		].join( " && " )
 	},
+	permissions_osxArm64: {
+		command: [
+			"cd '<%= dir.releases %>/<%= package.name %>/osxArm64'",
+			"find . -type f -print0 | xargs -0 chmod -R g=u,o=u,g-w,o-w"
+		].join( " && " )
+	},
+
+	sign_osx64: {
+		command: [
+			"codesign --force --sign -",
+			"'<%= dir.releases %>/<%= package.name %>/osx64/<%= package.name %>.app'"
+		].join( " " )
+	},
+	sign_osxArm64: {
+		command: [
+			"codesign --force --sign -",
+			"'<%= dir.releases %>/<%= package.name %>/osxArm64/<%= package.name %>.app'"
+		].join( " " )
+	},
 	permissions_linux32: {
 		command: [
 			"cd '<%= dir.releases %>/<%= package.name %>/linux32'",
@@ -32,6 +51,18 @@ module.exports = {
 		].join( "/" ),
 		command: "str=\"$(jq 'del(.product_string)' package.json)\" && echo \"$str\" > package.json"
 	},
+	packagejson_osxArm64: {
+		cwd: [
+			"<%= dir.releases %>",
+			"<%= package.name %>",
+			"osxArm64",
+			"<%= package.name %>.app",
+			"Contents",
+			"Resources",
+			"app.nw"
+		].join( "/" ),
+		command: "str=\"$(jq 'del(.product_string) | .[\"chromium-args\"] = (. [\"chromium-args\"] | sub(\"--disable-features=nw2\"; \"\"))' package.json)\" && echo \"$str\" > package.json"
+	},
 
 	archive_win32: {
 		command: [
@@ -55,6 +86,14 @@ module.exports = {
 			"'<%= compress.osx64.input %>'",
 			"'<%= compress.osx64.output %>'",
 			"'<%= compress.osx64.prefix %>'"
+		].join( " " )
+	},
+	archive_osxArm64: {
+		command: [
+			"bash '<%= dir.resources %>/archive/tar-gzip.sh'",
+			"'<%= compress.osxArm64.input %>'",
+			"'<%= compress.osxArm64.output %>'",
+			"'<%= compress.osxArm64.prefix %>'"
 		].join( " " )
 	},
 	archive_linux32: {

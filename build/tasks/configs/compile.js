@@ -19,7 +19,18 @@ module.exports = {
 			],
 			after: [
 				"shell:packagejson_osx64",
-				"shell:permissions_osx64"
+				"shell:permissions_osx64",
+				"shell:sign_osx64"
+			]
+		},
+		osxArm64: {
+			before: [
+				"clean:release_osxArm64"
+			],
+			after: [
+				"shell:packagejson_osxArm64",
+				"shell:permissions_osxArm64",
+				"shell:sign_osxArm64"
 			]
 		},
 

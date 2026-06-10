@@ -19,7 +19,8 @@ module.exports = {
 			new NwjsPlugin(
 				grunt.config( "nwjs" ),
 				{
-					files: `${grunt.config( "dir" )[ path ]}/**`,
+					mode: "run",
+					srcDir: `${grunt.config( "dir" )[ path ]}`,
 					flavor: "sdk",
 					argv: "--remote-debugging-port=8888"
 				}
