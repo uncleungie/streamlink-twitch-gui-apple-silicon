@@ -20,6 +20,11 @@ module.exports = {
 		prefix: "<%= main['display-name'] %>.app",
 		output: "<%= dir.dist %>/<%= package.name %>-<%= version %>-macOS.tar.gz"
 	},
+	osxArm64: {
+		input: "<%= dir.releases %>/<%= package.name %>/osxArm64/<%= package.name %>.app",
+		prefix: "<%= main['display-name'] %>.app",
+		output: "<%= dir.dist %>/<%= package.name %>-<%= version %>-macOS-arm64.tar.gz"
+	},
 	linux32: {
 		input: "<%= dir.releases %>/<%= package.name %>/linux32",
 		prefix: "<%= package.name %>",

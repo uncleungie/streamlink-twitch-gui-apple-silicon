@@ -1,79 +1,89 @@
-const files = [
-	"<%= dir.tmp_prod %>/**"
-];
-const ignoreBinWin32 = "!<%= dir.tmp_prod %>/bin/win32/**";
-const ignoreBinWin64 = "!<%= dir.tmp_prod %>/bin/win64/**";
-
-
 module.exports = {
 	options: {
-		files,
-		buildDir: "<%= dir.releases %>",
-		cacheDir: "<%= dir.cache %>",
+		mode    : "build",
 		flavor  : "normal",
 		zip     : false,
-		winIco  : "<%= dir.resources %>/icons/icon-16-32-48-256.ico",
-		macIcns : "<%= dir.resources %>/icons/icon-1024.icns",
-		macPlist: {
-			CFBundleIdentifier : "<%= main['app-identifier'] %>",
-			CFBundleName       : "<%= main['display-name'] %>",
-			CFBundleDisplayName: "<%= main['display-name'] %>"
-		}
+		glob    : false,
+		cacheDir: "<%= dir.cache %>",
+		logLevel: "info"
 	},
 
 	win32: {
 		options: {
-			platforms: [ "win32" ],
-			version: "0.83.0",
-			files: [
-				...files,
-				ignoreBinWin64
-			]
+			platform: "win",
+			arch    : "ia32",
+			version : "0.83.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/win32",
+			srcDir  : "<%= dir.tmp_prod %>",
+			app     : {
+				icon: "<%= dir.resources %>/icons/icon-16-32-48-256.ico"
+			}
 		}
 	},
 	win64: {
 		options: {
-			platforms: [ "win64" ],
-			version: "0.83.0",
-			files: [
-				...files,
-				ignoreBinWin32
-			]
+			platform: "win",
+			arch    : "x64",
+			version : "0.83.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/win64",
+			srcDir  : "<%= dir.tmp_prod %>",
+			app     : {
+				icon: "<%= dir.resources %>/icons/icon-16-32-48-256.ico"
+			}
 		}
 	},
 
 	osx64: {
 		options: {
-			platforms: [ "osx64" ],
-			version: "0.83.0",
-			files: [
-				...files,
-				ignoreBinWin32,
-				ignoreBinWin64
-			]
+			platform: "osx",
+			arch    : "x64",
+			version : "0.83.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/osx64",
+			srcDir  : "<%= dir.tmp_prod %>",
+			app     : {
+				icon                     : "<%= dir.resources %>/icons/icon-1024.icns",
+				CFBundleIdentifier       : "<%= main['app-identifier'] %>",
+				CFBundleName             : "<%= main['display-name'] %>",
+				CFBundleDisplayName      : "<%= main['display-name'] %>",
+				LSApplicationCategoryType: "public.app-category.entertainment",
+				NSHumanReadableCopyright : ""
+			}
+		}
+	},
+	osxArm64: {
+		options: {
+			platform: "osx",
+			arch    : "arm64",
+			version : "0.112.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/osxArm64",
+			srcDir  : "<%= dir.tmp_prod %>",
+			app     : {
+				icon                     : "<%= dir.resources %>/icons/icon-1024.icns",
+				CFBundleIdentifier       : "<%= main['app-identifier'] %>",
+				CFBundleName             : "<%= main['display-name'] %>",
+				CFBundleDisplayName      : "<%= main['display-name'] %>",
+				LSApplicationCategoryType: "public.app-category.entertainment",
+				NSHumanReadableCopyright : ""
+			}
 		}
 	},
 
 	linux32: {
 		options: {
-			platforms: [ "linux32" ],
-			version: "0.83.0",
-			files: [
-				...files,
-				ignoreBinWin32,
-				ignoreBinWin64
-			]
+			platform: "linux",
+			arch    : "ia32",
+			version : "0.83.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/linux32",
+			srcDir  : "<%= dir.tmp_prod %>"
 		}
 	},
 	linux64: {
 		options: {
-			platforms: [ "linux64" ],
-			version: "0.83.0",
-			files: [
-				...files,
-				ignoreBinWin32,
-				ignoreBinWin64
-			]
+			platform: "linux",
+			arch    : "x64",
+			version : "0.83.0",
+			outDir  : "<%= dir.releases %>/<%= package.name %>/linux64",
+			srcDir  : "<%= dir.tmp_prod %>"
 		}
 	}
 };

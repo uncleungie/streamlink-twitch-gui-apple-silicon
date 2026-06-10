@@ -3,10 +3,18 @@ const platforms = require( "../../common/platforms" );
 
 class NwjsPlugin {
 	constructor( nwConf = {}, nwOptionsOverride = {}, options = {} ) {
-		const platform = platforms.getPlatform();
-		const { options: nwOptions, [ platform ]: { options: nwPlatformOptions } } = nwConf;
+		const plat = platforms.getPlatform();
+		const { nwPlatform, nwArch } = platforms.platforms[ plat ];
+		const { options: nwOptions, [ plat ]: { options: nwPlatformOptions } } = nwConf;
 
-		this.nwOptions = Object.assign( {}, nwOptions, nwPlatformOptions, nwOptionsOverride );
+		this.nwOptions = Object.assign(
+			{},
+			nwOptions,
+			nwPlatformOptions,
+			{ platform: nwPlatform, arch: nwArch },
+			nwOptionsOverride,
+			{ glob: false }
+		);
 		this.options = Object.assign({
 			rerunOnExit: true,
 			log: true,
@@ -25,8 +33,7 @@ class NwjsPlugin {
 		});
 	}
 
-	_run() {
-		const NwBuilder = require( "nw-builder" );
+	async _run() {
 		const { nwOptions, options } = this;
 
 		function log( msg ) {
@@ -34,27 +41,22 @@ class NwjsPlugin {
 			console.log( String( msg ).trim() );
 		}
 
-		function launch() {
-			const nw = new NwBuilder( nwOptions );
+		async function launch() {
+			try {
+				const { default: nwbuild } = await import( "nw-builder" );
+				const nwProcess = await nwbuild( nwOptions );
 
-			if ( options.log ) {
-				nw.on( "log", log );
+				nwProcess.on( "close", () => {
+					if ( options.rerunOnExit ) {
+						setTimeout( launch, 1000 );
+					}
+				});
+			} catch ( err ) {
+				log( `NW.js launch error: ${err.message}` );
 			}
-			if ( options.log && options.logStdOut ) {
-				nw.on( "stdout", log );
-			}
-			if ( options.log && options.logStdErr ) {
-				nw.on( "stderr", log );
-			}
-
-			nw.run().then(function() {
-				if ( options.rerunOnExit ) {
-					setTimeout( launch, 1000 );
-				}
-			});
 		}
 
-		launch();
+		await launch();
 	}
 }
 

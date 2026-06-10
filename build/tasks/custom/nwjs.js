@@ -1,7 +1,5 @@
 module.exports = function( grunt ) {
-	const NwBuilder = require( "nw-builder" );
-
-	function taskNwjs() {
+	async function taskNwjs() {
 		const done = this.async();
 		const options = this.options();
 
@@ -9,17 +7,15 @@ module.exports = function( grunt ) {
 			options.flavor = "sdk";
 		}
 
-		const nw = new NwBuilder( options );
-
-		nw.on( "log", grunt.log.debug );
-		nw.on( "stdout", grunt.log.debug );
-		nw.on( "stderr", grunt.log.debug );
-
-		nw.build()
-			.then( () => {
-				grunt.log.ok( "NW.js application created." );
-				done();
-			}, grunt.fail.fatal );
+		try {
+			const { default: nwbuild } = await import( "nw-builder" );
+			await nwbuild( options );
+			grunt.log.ok( "NW.js application created." );
+			done();
+		} catch ( err ) {
+			grunt.log.error( "NW.js build error:", err.stack || err.message || err );
+			done( false );
+		}
 	}
 
 	grunt.registerMultiTask(
