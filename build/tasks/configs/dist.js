@@ -15,6 +15,11 @@ module.exports = {
 			tasks: [ "shell:archive_osx64" ],
 			checksum: "<%= compress.osx64.output %>"
 		},
+		archive_osxArm64: {
+			platform: "osxArm64",
+			tasks: [ "shell:archive_osxArm64" ],
+			checksum: "<%= compress.osxArm64.output %>"
+		},
 		archive_linux32: {
 			platform: "linux32",
 			tasks: [ "shell:archive_linux32" ],
