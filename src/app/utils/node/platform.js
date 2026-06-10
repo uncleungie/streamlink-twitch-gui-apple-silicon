@@ -27,7 +27,7 @@ export const isLinux  = platform === "linux";
 export const isWin7    = isWin && semverLt( release, "6.2.0" );
 export const isWinGte8 = isWin && !isWin7;
 
-export const is64bit = arch === "x64";
+export const is64bit = arch === "x64" || arch === "arm64";
 
 
 export const cachedir = ( () => {
