@@ -1,10 +1,9 @@
 # AGENTS.md — Maintaining the Apple Silicon branch
 
-## Purpose of this branch
-
-This branch (`apple-silicon`) exists solely to keep the arm64 macOS build
-working alongside upstream changes. **Do not add features here.** It tracks
-`master` via rebase.
+This is a **fork** of [streamlink/streamlink-twitch-gui](https://github.com/streamlink/streamlink-twitch-gui)
+at `github.com/uncleungie/streamlink-twitch-gui-apple-silicon`. It exists solely to
+keep the arm64 macOS build working alongside upstream changes. **Do not add features
+here.** It tracks `master` via rebase.
 
 ## Build commands
 
