@@ -35,10 +35,16 @@ Upstream master uses a forked v3; this branch has migrated to the official v4 pa
 #### Helper renaming patch
 
 nw-builder v4 renames NW.js helper apps (GPU, Renderer, etc.) to match the
-app name. This breaks their linker-signed code signatures. Re-signing with
-`codesign` produces plain adhoc signatures (flags=0x2), which macOS 26+
-rejects for GPU process launch — `codesign` cannot reproduce the
-`linker-signed` flag (flags=0x20002) that the originals have.
+app name. Renaming modifies the Mach-O binary (bundle paths, plist contents),
+which invalidates the page hashes in the embedded `LC_CODE_SIGNATURE`. The
+original linker-produced ad-hoc signature is valid and functional — re-signing
+would be unnecessary and risks entitlement or PAC-ABI issues.
+
+`codesign --sign -` also strips the `CS_LINKER_SIGNED` flag (0x20002) that the
+linker sets, since Apple's `signer.cpp` deliberately does not preserve it for
+linker-signed binaries. This flag loss is cosmetic — the kernel's
+`CS_ALLOWED_MACHO` mask accepts both `CS_ADHOC` (0x2) and `CS_LINKER_SIGNED`,
+so plain ad-hoc signatures are not rejected for child process launch.
 
 `bin/patched-osx.js` is a copy of `node_modules/nw-builder/src/bld/osx.js`
 with the helper rename block removed. The `postinstall` script copies it
@@ -85,10 +91,14 @@ Following them produces a 3x bloated build.
 NW.js 0.83.0 arm64 binaries from `dl.nwjs.io` have an invalid code signature.
 macOS kills them on launch (SIGKILL, exit 137). That's why arm64 uses 0.112.0.
 
-On macOS 26+, the GPU helper process must have a `linker-signed` code
-signature (flags=0x20002). The `codesign` tool can only produce plain adhoc
-signatures (flags=0x2). This is why helpers must not be renamed (the
-`osx.js` patch) and `--deep` must not be used when re-signing.
+On Apple Silicon (macOS 11+), all executable code must carry at least an
+ad-hoc code signature. The linker sets the `CS_LINKER_SIGNED` flag (0x20002)
+when auto-signing at link time. Re-signing with `codesign --sign -` produces
+plain ad-hoc (flags=0x2) and strips `CS_LINKER_SIGNED`, but the kernel accepts
+both — the flag loss itself does not block execution. However, if a Mach-O
+binary is modified (e.g. via helper renaming), its page hashes become stale
+and the kernel will SIGKILL it on launch. This is why helpers must not be
+renamed (the `osx.js` patch) and `--deep` must not be used when re-signing.
 
 ### Gitignored build artifacts
 
