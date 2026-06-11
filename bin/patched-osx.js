@@ -68,8 +68,8 @@ export default async function setOsxConfig({ version, app, outDir, releaseInfo }
       path.resolve(outApp, 'Contents', 'MacOS', app.name),
     );
 
-    /* Rename all Helper apps - SKIPPED to preserve linker-signed signatures */
-    /* Helper renaming breaks the code signatures which macOS 26+ requires for GPU launch */
+    /* Rename all Helper apps - SKIPPED to preserve original linker-signed signatures */
+    /* Renaming modifies the Mach-O binary, invalidating page hashes in LC_CODE_SIGNATURE */
     // const helperApps = [
     //   { name: 'nwjs Helper (Alerts).app', id: 'helper.alert' },
     //   { name: 'nwjs Helper (GPU).app', id: 'helper.gpu' },
