@@ -3,7 +3,7 @@
 
 > [!NOTE]
 > This is a fork with **Apple Silicon (arm64)** build support.
-> All credits go to the [bastimeyer](https://github.com/streamlink/streamlink-twitch-gui).
+> All credits go to [bastimeyer](https://github.com/streamlink/streamlink-twitch-gui).
 
 [![Supported platforms][badge-platforms]][Releases] [![Latest release][badge-release]][Releases] [![Open issues][badge-issues]][Issues] [![Gitter IRC][badge-gitter]][Gitter] [![Build status][badge-actions]][Github-actions] [![Code coverage][badge-codecov]][Codecov]
 
