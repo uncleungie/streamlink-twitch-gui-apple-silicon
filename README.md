@@ -1,5 +1,10 @@
-[Streamlink Twitch GUI][Website]
+[Streamlink Twitch GUI (Apple Silicon)][Website]
 ===
+
+> [!NOTE]
+> This is a fork with **Apple Silicon (arm64)** build support.
+> All credits go to the [upstream project](https://github.com/streamlink/streamlink-twitch-gui).
+
 [![Supported platforms][badge-platforms]][Releases] [![Latest release][badge-release]][Releases] [![Open issues][badge-issues]][Issues] [![Gitter IRC][badge-gitter]][Gitter] [![Build status][badge-actions]][Github-actions] [![Code coverage][badge-codecov]][Codecov]
 
 > [!IMPORTANT]
