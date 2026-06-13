@@ -1,9 +1,10 @@
 module.exports = {
 	options: {
-		mode  : "run",
-		flavor: "sdk",
-		glob  : false,
-		argv  : "--remote-debugging-port=8888"
+		mode    : "run",
+		flavor  : "sdk",
+		glob    : false,
+		cacheDir: "<%= dir.cache %>",
+		argv    : ["--remote-debugging-port=8888"]
 	},
 
 	dev: {
