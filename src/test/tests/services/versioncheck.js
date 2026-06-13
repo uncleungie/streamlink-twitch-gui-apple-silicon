@@ -435,7 +435,7 @@ module( "services/versioncheck", function( hooks ) {
 		assert.notOk( VersioncheckService.modal.isModalOpened, "Modal has been closed" );
 		assert.ok(
 			this.openBrowserSpy.calledWithExactly(
-				"https://github.com/streamlink/streamlink-twitch-gui/releases/v1337.0.0"
+				"https://github.com/uncleungie/streamlink-twitch-gui-apple-silicon/releases/v1337.0.0"
 			),
 			"Opens release page in browser"
 		);
