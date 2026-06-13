@@ -37,14 +37,17 @@ Upstream master uses a forked v3; this branch has migrated to the official v4 pa
 nw-builder v4 renames NW.js helper apps (GPU, Renderer, etc.) to match the
 app name. Renaming modifies the Mach-O binary (bundle paths, plist contents),
 which invalidates the page hashes in the embedded `LC_CODE_SIGNATURE`. The
-original linker-produced ad-hoc signature is valid and functional — re-signing
-would be unnecessary and risks entitlement or PAC-ABI issues.
+original linker-produced ad-hoc signature is valid and functional, so
+re-signing the helpers is unnecessary — and would needlessly destroy their
+`CS_LINKER_SIGNED` status (see below).
 
-`codesign --sign -` also strips the `CS_LINKER_SIGNED` flag (0x20002) that the
-linker sets, since Apple's `signer.cpp` deliberately does not preserve it for
-linker-signed binaries. This flag loss is cosmetic — the kernel's
-`CS_ALLOWED_MACHO` mask accepts both `CS_ADHOC` (0x2) and `CS_LINKER_SIGNED`,
-so plain ad-hoc signatures are not rejected for child process launch.
+`codesign --sign -` strips the `CS_LINKER_SIGNED` flag (`0x00020000`) that
+the linker sets, since Apple's `signer.cpp` deliberately does not preserve it
+for linker-signed binaries; the result is plain `CS_ADHOC` (`0x2`). This flag
+loss is cosmetic — the kernel accepts both flag combinations for child process
+launch, so plain ad-hoc signatures are not rejected. (The combined value
+`0x20002` reported by `codesign -dvv` is `CS_ADHOC | CS_LINKER_SIGNED`, not
+the value of the single flag.)
 
 `bin/patched-osx.js` is a copy of `node_modules/nw-builder/src/bld/osx.js`
 with the helper rename block removed. The `postinstall` script copies it
@@ -92,13 +95,14 @@ NW.js 0.83.0 arm64 binaries from `dl.nwjs.io` have an invalid code signature.
 macOS kills them on launch (SIGKILL, exit 137). That's why arm64 uses 0.112.0.
 
 On Apple Silicon (macOS 11+), all executable code must carry at least an
-ad-hoc code signature. The linker sets the `CS_LINKER_SIGNED` flag (0x20002)
-when auto-signing at link time. Re-signing with `codesign --sign -` produces
-plain ad-hoc (flags=0x2) and strips `CS_LINKER_SIGNED`, but the kernel accepts
-both — the flag loss itself does not block execution. However, if a Mach-O
-binary is modified (e.g. via helper renaming), its page hashes become stale
-and the kernel will SIGKILL it on launch. This is why helpers must not be
-renamed (the `osx.js` patch) and `--deep` must not be used when re-signing.
+ad-hoc code signature. The linker sets the `CS_LINKER_SIGNED` flag
+(`0x00020000`) when auto-signing at link time. Re-signing with
+`codesign --sign -` produces plain ad-hoc (flags=0x2) and strips
+`CS_LINKER_SIGNED`, but the kernel accepts both — the flag loss itself does
+not block execution. However, if a Mach-O binary is modified (e.g. via helper
+renaming), its page hashes become stale and the kernel will SIGKILL it on
+launch. This is why helpers must not be renamed (the `osx.js` patch) and
+`--deep` must not be used when re-signing.
 
 ### Gitignored build artifacts
 
@@ -129,6 +133,7 @@ Manually resolve by keeping this branch's v4 code.
 - `build/tasks/configs/dist.js` — dist target
 - `build/tasks/configs/clean.js` — release cleanup
 - `build/tasks/configs/run.js` — v4 API options
+- `build/tasks/configs/runtest.js` — test-runner output path
 - `build/tasks/custom/nwjs.js` — v4 nwbuild functional API
 - `build/tasks/custom/run.js` — v4 nwbuild functional API
 - `build/tasks/custom/runtest.js` — v4 nwbuild process-based API
@@ -139,3 +144,8 @@ Manually resolve by keeping this branch's v4 code.
 - `src/app/package.json` — zero-width title
 - `src/app/index.html` — empty `<title>`
 - `src/app/utils/node/platform.js` — `is64bit` includes `arm64`
+- `src/config/update.json` — update checks repointed to fork releases
+
+### Docs
+- `README.md` — Apple Silicon fork branding + attribution
+- `AGENTS.md` — this file (maintenance docs)
