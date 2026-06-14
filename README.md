@@ -72,8 +72,8 @@ Building the application on your own is simple. Just make sure that the latest s
 Then run the following lines to clone the repository, to install all dependencies and to start the build process. You will then find the built application inside the `build/releases` folder. See [CONTRIBUTING.md][Contributing] for more detailed instructions.
 
 ```bash
-git clone https://github.com/streamlink/streamlink-twitch-gui.git
-cd streamlink-twitch-gui
+git clone -b apple-silicon https://github.com/uncleungie/streamlink-twitch-gui-apple-silicon.git
+cd streamlink-twitch-gui-apple-silicon
 yarn install
 yarn run grunt release
 ```
